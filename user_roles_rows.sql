@@ -1,0 +1,1 @@
+INSERT INTO "public"."user_roles" ("id", "user_id", "role", "created_at", "is_admin") VALUES ('25fcb927-55f7-4f6f-9dd8-119868d078fe', '0791f2a9-322e-44f0-bce4-4911144b52e5', 'admin', '2024-10-21 14:42:51.357428+00', 'true');
