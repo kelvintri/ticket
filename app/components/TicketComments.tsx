@@ -2,6 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
+import { Button } from "@/components/ui/button"
+import { Textarea } from "@/components/ui/textarea"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 interface Comment {
   id: string
@@ -67,33 +70,35 @@ export const TicketComments = ({ ticketId }: { ticketId: string }) => {
   if (error) return <p>Error: {error}</p>
 
   return (
-    <div className="mt-8">
-      <h3 className="text-xl font-bold mb-4">Comments</h3>
-      <div className="space-y-4">
-        {comments.map((comment) => (
-          <div key={comment.id} className="bg-gray-100 p-4 rounded">
-            <p>{comment.content}</p>
-            <p className="text-sm text-gray-500 mt-2">
-              {new Date(comment.created_at).toLocaleString()}
-            </p>
-          </div>
-        ))}
-      </div>
-      <form onSubmit={handleSubmitComment} className="mt-4">
-        <textarea
-          className="w-full p-2 border rounded"
-          value={newComment}
-          onChange={(e) => setNewComment(e.target.value)}
-          placeholder="Add a comment..."
-          rows={3}
-        />
-        <button
-          type="submit"
-          className="mt-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-        >
-          Add Comment
-        </button>
-      </form>
-    </div>
+    <Card className="mt-8">
+      <CardHeader>
+        <CardTitle>Comments</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          {comments.map((comment) => (
+            <Card key={comment.id}>
+              <CardContent className="pt-4">
+                <p>{comment.content}</p>
+                <p className="text-sm text-muted-foreground mt-2">
+                  {new Date(comment.created_at).toLocaleString()}
+                </p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+        <form onSubmit={handleSubmitComment} className="mt-4">
+          <Textarea
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+            placeholder="Add a comment..."
+            rows={3}
+          />
+          <Button type="submit" className="mt-2">
+            Add Comment
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
   )
 }

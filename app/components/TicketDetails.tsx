@@ -5,6 +5,11 @@ import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import { useUserRole } from '@/app/hooks/useUserRole'
 import { TicketComments } from './TicketComments'
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 interface Ticket {
   id: string
@@ -83,104 +88,75 @@ export const TicketDetails = ({ id }: { id: string }) => {
     }
   }
 
+  const canEditTicket = userRole?.role === 'admin' || userRole?.role === 'support'
+
   if (loading || roleLoading) return <p>Loading ticket details...</p>
   if (error) return <p>Error: {error}</p>
   if (!ticket) return <p>Ticket not found</p>
 
-  const canEditTicket = userRole?.role === 'support' || userRole?.is_admin
-
   return (
-    <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-      {isEditing && canEditTicket ? (
-        <form onSubmit={handleUpdate}>
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="title">
-              Title
-            </label>
-            <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="title"
-              type="text"
+    <Card>
+      <CardHeader>
+        <CardTitle>{isEditing ? 'Edit Ticket' : ticket.title}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        {isEditing && canEditTicket ? (
+          <form onSubmit={handleUpdate} className="space-y-4">
+            <Input
               value={ticket.title}
               onChange={(e) => setTicket({ ...ticket, title: e.target.value })}
+              placeholder="Title"
             />
-          </div>
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="description">
-              Description
-            </label>
-            <textarea
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="description"
+            <Textarea
               value={ticket.description}
               onChange={(e) => setTicket({ ...ticket, description: e.target.value })}
+              placeholder="Description"
             />
-          </div>
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="status">
-              Status
-            </label>
-            <select
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="status"
+            <Select
               value={ticket.status}
-              onChange={(e) => setTicket({ ...ticket, status: e.target.value })}
+              onValueChange={(value) => setTicket({ ...ticket, status: value })}
             >
-              <option value="open">Open</option>
-              <option value="in_progress">In Progress</option>
-              <option value="closed">Closed</option>
-            </select>
-          </div>
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="priority">
-              Priority
-            </label>
-            <select
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="priority"
+              <SelectTrigger>
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="open">Open</SelectItem>
+                <SelectItem value="in_progress">In Progress</SelectItem>
+                <SelectItem value="closed">Closed</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select
               value={ticket.priority}
-              onChange={(e) => setTicket({ ...ticket, priority: e.target.value })}
+              onValueChange={(value) => setTicket({ ...ticket, priority: value })}
             >
-              <option value="low">Low</option>
-              <option value="medium">Medium</option>
-              <option value="high">High</option>
-            </select>
-          </div>
-          <div className="flex items-center justify-between">
-            <button
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-              type="submit"
-            >
-              Save Changes
-            </button>
-            <button
-              className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-              type="button"
-              onClick={() => setIsEditing(false)}
-            >
-              Cancel
-            </button>
-          </div>
-        </form>
-      ) : (
-        <>
-          <h2 className="text-2xl font-bold mb-4">{ticket.title}</h2>
-          <p className="mb-4">{ticket.description}</p>
-          <p className="mb-2"><strong>Status:</strong> {ticket.status}</p>
-          <p className="mb-2"><strong>Priority:</strong> {ticket.priority}</p>
-          <p className="mb-2"><strong>Created at:</strong> {new Date(ticket.created_at).toLocaleString()}</p>
-          <p className="mb-4"><strong>Updated at:</strong> {new Date(ticket.updated_at).toLocaleString()}</p>
-          {canEditTicket && (
-            <button
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-              onClick={() => setIsEditing(true)}
-            >
-              Edit Ticket
-            </button>
-          )}
-        </>
-      )}
-      <TicketComments ticketId={id} />
-    </div>
+              <SelectTrigger>
+                <SelectValue placeholder="Priority" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="low">Low</SelectItem>
+                <SelectItem value="medium">Medium</SelectItem>
+                <SelectItem value="high">High</SelectItem>
+              </SelectContent>
+            </Select>
+            <div className="flex justify-between">
+              <Button type="submit">Save Changes</Button>
+              <Button variant="outline" onClick={() => setIsEditing(false)}>Cancel</Button>
+            </div>
+          </form>
+        ) : (
+          <>
+            <p className="mb-4">{ticket.description}</p>
+            <p className="mb-2"><strong>Status:</strong> {ticket.status}</p>
+            <p className="mb-2"><strong>Priority:</strong> {ticket.priority}</p>
+            <p className="mb-2"><strong>Created at:</strong> {new Date(ticket.created_at).toLocaleString()}</p>
+            <p className="mb-4"><strong>Updated at:</strong> {new Date(ticket.updated_at).toLocaleString()}</p>
+            {canEditTicket && (
+              <Button onClick={() => setIsEditing(true)}>Edit Ticket</Button>
+            )}
+          </>
+        )}
+        <TicketComments ticketId={id} />
+      </CardContent>
+    </Card>
   )
 }

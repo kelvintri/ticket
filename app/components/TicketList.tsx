@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 import { useUserRole } from '@/app/hooks/useUserRole'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Button } from "@/components/ui/button"
 
 interface Ticket {
   id: string
@@ -18,7 +20,6 @@ export const TicketList = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const { userRole, loading: roleLoading } = useUserRole()
-
 
   useEffect(() => {
     if (!roleLoading) {
@@ -61,33 +62,31 @@ export const TicketList = () => {
   if (error) return <p>Error: {error}</p>
 
   return (
-    <div className="overflow-x-auto">
-      <table className="min-w-full bg-white">
-        <thead>
-          <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-            <th className="py-3 px-6 text-left">Title</th>
-            <th className="py-3 px-6 text-left">Status</th>
-            <th className="py-3 px-6 text-left">Priority</th>
-            <th className="py-3 px-6 text-left">Created At</th>
-            <th className="py-3 px-6 text-left">Actions</th>
-          </tr>
-        </thead>
-        <tbody className="text-gray-600 text-sm font-light">
-          {tickets.map((ticket) => (
-            <tr key={ticket.id} className="border-b border-gray-200 hover:bg-gray-100">
-              <td className="py-3 px-6 text-left whitespace-nowrap">{ticket.title}</td>
-              <td className="py-3 px-6 text-left">{ticket.status}</td>
-              <td className="py-3 px-6 text-left">{ticket.priority}</td>
-              <td className="py-3 px-6 text-left">{new Date(ticket.created_at).toLocaleString()}</td>
-              <td className="py-3 px-6 text-left">
-                <Link href={`/tickets/${ticket.id}`} className="text-blue-600 hover:text-blue-900">
-                  View
-                </Link>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Title</TableHead>
+          <TableHead>Status</TableHead>
+          <TableHead>Priority</TableHead>
+          <TableHead>Created At</TableHead>
+          <TableHead>Actions</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {tickets.map((ticket) => (
+          <TableRow key={ticket.id}>
+            <TableCell>{ticket.title}</TableCell>
+            <TableCell>{ticket.status}</TableCell>
+            <TableCell>{ticket.priority}</TableCell>
+            <TableCell>{new Date(ticket.created_at).toLocaleString()}</TableCell>
+            <TableCell>
+              <Button variant="link" asChild>
+                <Link href={`/tickets/${ticket.id}`}>View</Link>
+              </Button>
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
   )
 }

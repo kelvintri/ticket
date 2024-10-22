@@ -8,6 +8,9 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { useUserRole } from './hooks/useUserRole'
+import { ThemeProvider } from "@/components/theme-provider"
+import { Button } from "@/components/ui/button"
+import { ModeToggle } from "./components/ModeToggle";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -50,43 +53,43 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <nav className="bg-gray-800 p-4">
-          <div className="container mx-auto flex justify-between items-center">
-            <Link href="/" className="text-white text-xl font-bold">
-              IT Ticketing System
-            </Link>
-            <div>
-              {user ? (
-                <>
-                  <Link href="/tickets" className="text-white hover:text-gray-300 mr-4">
-                    Tickets
-                  </Link>
-                  {userRole?.is_admin && (
-                    <Link href="/admin" className="text-white hover:text-gray-300 mr-4">
-                      Admin
-                    </Link>
-                  )}
-                  <button
-                    onClick={handleLogout}
-                    className="text-white hover:text-gray-300"
-                  >
-                    Logout
-                  </button>
-                </>
-              ) : (
-                <>
-                  <Link href="/login" className="text-white hover:text-gray-300 mr-4">
-                    Login
-                  </Link>
-                  <Link href="/register" className="text-white hover:text-gray-300">
-                    Register
-                  </Link>
-                </>
-              )}
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <nav className="bg-background border-b">
+            <div className="container mx-auto px-4 py-2 flex justify-between items-center">
+              <Link href="/" className="text-2xl font-bold">
+                IT Ticketing System
+              </Link>
+              <div>
+                <ModeToggle/>
+                {user ? (
+                  <>
+                    <Button variant="ghost" asChild>
+                      <Link href="/tickets">Tickets</Link>
+                    </Button>
+                    {userRole?.is_admin && (
+                      <Button variant="ghost" asChild>
+                        <Link href="/admin">Admin</Link>
+                      </Button>
+                    )}
+                    <Button variant="ghost" onClick={handleLogout}>
+                      Logout
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button variant="ghost" asChild>
+                      <Link href="/login">Login</Link>
+                    </Button>
+                    <Button variant="ghost" asChild>
+                      <Link href="/register">Register</Link>
+                    </Button>
+                  </>
+                )}
+              </div>
             </div>
-          </div>
-        </nav>
-        <main>{children}</main>
+          </nav>
+          <main className="container mx-auto px-4 py-8">{children}</main>
+        </ThemeProvider>
       </body>
     </html>
   );
